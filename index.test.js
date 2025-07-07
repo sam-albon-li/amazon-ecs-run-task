@@ -35,6 +35,7 @@ describe('Deploy to ECS', () => {
             .mockReturnValueOnce('cluster-789')                               // cluster
             .mockReturnValueOnce('1')                                         // count
             .mockReturnValueOnce('amazon-ecs-run-task-for-github-actions');   // started-by
+        core.getBooleanInput = jest.fn();
 
         process.env = Object.assign(process.env, { GITHUB_WORKSPACE: __dirname });
 
@@ -124,8 +125,7 @@ describe('Deploy to ECS', () => {
     test('registers the task definition contents and runs the task', async () => {
         const overrides = { "containerOverrides": [{ name: "Hello World!" }] };
 
-        core.getInput.mockReturnValueOnce()                  // wait-for-finish
-            .mockReturnValueOnce()                           // wait-for-minute
+        core.getInput.mockReturnValueOnce()                  // wait-for-minute
             .mockReturnValueOnce(JSON.stringify(overrides)); // overrides
 
         await run();
@@ -144,13 +144,7 @@ describe('Deploy to ECS', () => {
     });
 
     test('registers the task definition contents and waits for tasks to finish successfully', async () => {
-        core.getInput = jest
-            .fn()
-            .mockReturnValueOnce('task-definition.json')                      // task-definition
-            .mockReturnValueOnce('cluster-789')                               // cluster
-            .mockReturnValueOnce('1')                                         // count
-            .mockReturnValueOnce('amazon-ecs-run-task-for-github-actions')    // started-by
-            .mockReturnValueOnce('true');                                     // wait-for-finish
+        core.getBooleanInput.mockReturnValueOnce(true); // wait-for-finish
 
         await run();
         expect(core.setFailed).toHaveBeenCalledTimes(0);

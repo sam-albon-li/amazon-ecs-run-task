@@ -122,6 +122,12 @@ describe('Deploy to ECS', () => {
     });
 
     test('registers the task definition contents and runs the task', async () => {
+        const overrides = { "containerOverrides": [{ name: "Hello World!" }] };
+
+        core.getInput.mockReturnValueOnce()                  // wait-for-finish
+            .mockReturnValueOnce()                           // wait-for-minute
+            .mockReturnValueOnce(JSON.stringify(overrides)); // overrides
+
         await run();
         expect(core.setFailed).toHaveBeenCalledTimes(0);
         expect(mockEcsRegisterTaskDef).toHaveBeenNthCalledWith(1, { family: 'task-def-family'});
@@ -130,7 +136,8 @@ describe('Deploy to ECS', () => {
             cluster: 'cluster-789',
             taskDefinition: 'task:def:arn',
             count: '1',
-            startedBy: 'amazon-ecs-run-task-for-github-actions'
+            startedBy: 'amazon-ecs-run-task-for-github-actions',
+            overrides: overrides
         });
         expect(mockEcsWaiter).toHaveBeenCalledTimes(0);
         expect(core.setOutput).toBeCalledWith('task-arn', ['arn:aws:ecs:fake-region:account_id:task/arn']);

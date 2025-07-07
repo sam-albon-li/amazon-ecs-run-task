@@ -89,7 +89,7 @@ async function run() {
     const cluster = core.getInput('cluster', { required: false });
     const count = core.getInput('count', { required: true });
     const startedBy = core.getInput('started-by', { required: false }) || agent;
-    const waitForFinish = core.getBooleanInput('wait-for-finish', { required: false });
+    const waitForFinish = core.getInput('wait-for-finish', { required: false }) || false;
     let waitForMinutes = parseInt(core.getInput('wait-for-minutes', { required: false })) || 30;
     if (waitForMinutes > MAX_WAIT_MINUTES) {
       waitForMinutes = MAX_WAIT_MINUTES;
@@ -148,7 +148,7 @@ async function run() {
 
     core.setOutput('task-arn', taskArns);
 
-    if (waitForFinish) {
+    if (waitForFinish && waitForFinish.toLowerCase() === 'true') {
       await waitForTasksStopped(ecs, clusterName, taskArns, waitForMinutes);
       await tasksExitCode(ecs, clusterName, taskArns);
     }

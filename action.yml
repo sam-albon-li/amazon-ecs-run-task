@@ -22,6 +22,9 @@ inputs:
   wait-for-minutes:
     description: 'How long to wait for the task reach stopped state, in minutes (default: 30 minutes, max: 6 hours).'
     required: false
+  overrides:
+    description: 'JSON string with task overrides. See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#API_RunTask_RequestSyntax'
+    required: false
 outputs:
   task-definition-arn:
     description: 'The ARN of the registered ECS task definition'
